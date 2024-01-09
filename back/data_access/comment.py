@@ -2,7 +2,7 @@ import ydb
 
 
 class Comment:
-    def __init__(self, id: str, comment_text: str, datetime: ydb.datetime, username: str | None = None):
+    def __init__(self, id: str, comment_text: str, datetime: ydb.datetime, username=None):
         self.username = username
         self.datetime = datetime
         self.comment_text = comment_text
