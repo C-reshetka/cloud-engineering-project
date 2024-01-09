@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Comments page</title>
+    <style>
+        .root-container {
+            position: absolute;
+            top: 30px;
+            left: 100px;
+
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+        }
+
+        .feedback-panel {
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .comments-panel {
+            width: 200px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        #comments-placeholder {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .comment {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+
+            padding: 5px;
+            border: 1px solid black;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+        }
+    </style>
+</head>
+<body>
+<script>
+    function getAndSetFrontVersion(){
+        const iframe = document.createElement('iframe');
+        iframe.id = 'iframe';
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        iframe.src = './package.json';
+        setTimeout(function(){
+            const data = JSON.parse(document.getElementById('iframe').contentDocument.body.firstChild.innerHTML);
+            document.getElementsByClassName("footer")[0].innerHTML = `current front version is ${data.version}`;
+        }, 1000);
+    }
+
+    function fetchAndSetLastComments() {
+        fetch("http://127.0.0.1:8000/get-comments")
+            .then(x => x.json())
+            .then(x => {
+                let innerHtml = "";
+                for (const e of x.data) {
+                    innerHtml += `<div class="comment">${e.text}<div><i>${e.username ?? "Anonymous"}, ${e.datetime}</i></div></div>`;
+                }
+               document.getElementById("comments-placeholder").innerHTML = innerHtml;
+            });
+    }
+
+    window.onload = function(){
+        getAndSetFrontVersion();
+        fetchAndSetLastComments();
+    }
+
+    function send(){
+        const text = document.getElementById("text").value;
+        const username = document.getElementById("username").value ?? null;
+        fetch("http://127.0.0.1:8000/save-comment", {
+            method: "POST",
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({
+                text: text,
+                username: username
+            })
+        }).then(() => location.reload());
+    }
+</script>
+<div class="root-container">
+    <div class="feedback-panel">
+        <label for="text">Send us your feedback!</label>
+        <textarea id="text" rows="10" cols="50" name="text"></textarea>
+        <label for="username">Introduce yourself if want</label>
+        <input id="username"/>
+        <button onclick="send()">Send feedback!</button>
+    </div>
+
+    <div class="comments-panel">
+        Last comments:
+        <div id="comments-placeholder"></div>
+    </div>
+</div>
+</body>
+<footer class="footer">
+</footer>
+</html>
