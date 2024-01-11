@@ -1,0 +1,10 @@
+FROM python:3
+
+ADD ./ /
+
+RUN pip install ydb
+RUN pip install "ydb[yc]"
+RUN pip install fastapi
+RUN pip install uvicorn
+
+CMD [ "python3", "/app.py" ]
