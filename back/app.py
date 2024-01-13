@@ -26,6 +26,11 @@ app.add_middleware(
 )
 
 
+@app.get("/_ping")
+def ping():
+    return "pong"
+
+
 @app.get("/get-comments")
 def get_comments():
     comments = comments_repository.get_comments()
