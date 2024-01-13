@@ -1,9 +1,11 @@
+import socket
 import uuid
 
+import uvicorn
 import ydb
 from fastapi import FastAPI, Body
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
+
 import config
 from data_access.comment import Comment
 from data_access.comments_repository import CommentsRepository
@@ -24,6 +26,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/")
+def index():
+    with open("./version", "r") as f:
+        version = f.readline()
+    return {"hostname": socket.gethostname(), "version": version}
 
 
 @app.get("/_ping")
