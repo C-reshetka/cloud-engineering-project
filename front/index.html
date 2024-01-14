@@ -47,25 +47,39 @@
             position: absolute;
             bottom: 5px;
             left: 5px;
+
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
     </style>
 </head>
 <body>
 <script>
+    const back_address = 'http://158.160.143.98';
+
     function getAndSetFrontVersion(){
         const iframe = document.createElement('iframe');
         iframe.id = 'iframe';
         iframe.style.display = 'none';
         document.body.appendChild(iframe);
-        iframe.src = './package.json';
+        iframe.src = './version.json';
         setTimeout(function(){
             const data = JSON.parse(document.getElementById('iframe').contentDocument.body.firstChild.innerHTML);
-            document.getElementsByClassName("footer")[0].innerHTML = `current front version is ${data.version}`;
+            document.getElementById("front-version").innerText = `front version: ${data.version}`;
         }, 1000);
     }
 
+    function getAndSetBackInfo(){
+        fetch(`${back_address}/`)
+            .then(x => x.json())
+            .then(x => {
+                document.getElementById("back-info").innerText = `hostname: ${x.hostname}, replica version: ${x.version}`;
+            });
+    }
+
     function fetchAndSetLastComments() {
-        fetch("http://127.0.0.1:8000/get-comments")
+        fetch(`${back_address}/get-comments`)
             .then(x => x.json())
             .then(x => {
                 let innerHtml = "";
@@ -78,13 +92,14 @@
 
     window.onload = function(){
         getAndSetFrontVersion();
+        getAndSetBackInfo();
         fetchAndSetLastComments();
     }
 
     function send(){
         const text = document.getElementById("text").value;
         const username = document.getElementById("username").value ?? null;
-        fetch("http://127.0.0.1:8000/save-comment", {
+        fetch(`${back_address}/save-comment`, {
             method: "POST",
             headers: { "Accept": "application/json", "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -110,5 +125,7 @@
 </div>
 </body>
 <footer class="footer">
+    <span id="front-version"></span>
+    <span id="back-info"></span>
 </footer>
 </html>
