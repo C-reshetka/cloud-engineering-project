@@ -3,5 +3,5 @@
 param($Version)
 
 Set-Content -Path ".\version.json" -Value ('{ "Version": "' + $Version + '" }')
-s3cmd put version.json s3://comment-service-storage
+s3cmd put version.json s3://comment-service
 Remove-Item -Path ".\version.json"
