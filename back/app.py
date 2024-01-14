@@ -32,7 +32,7 @@ app.add_middleware(
 def index():
     with open("./version", "r") as f:
         version = f.readline()
-    return {"hostname": socket.gethostname(), "version": version.strip()}
+    return {"hostname": socket.gethostname(), "version": version}
 
 
 @app.get("/_ping")
