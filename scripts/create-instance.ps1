@@ -2,7 +2,7 @@ param($PubKeyPath)
 
 $create_vm_output = yc compute instance create --public-ip `
     --ssh-key $PubKeyPath `
-    --create-boot-disk image-id=fd8narkhqt532c99enpq `
+    --create-boot-disk image-id=fd86oi1hmp92o6dcae62 `
     --core-fraction 20;
 
 $instance_id = ([regex]'id: (.*?) ').Matches($create_vm_output).Groups[1];
